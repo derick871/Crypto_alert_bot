@@ -14,3 +14,10 @@ def send_alert(title, message):
         print(f"[Alert notified] {title}-{message}")
     except Exception as e:
       print("Fail to broadcast notification alert {e}")
+
+if __name__ == "__main__":
+    print("Testing notification dispatch...")
+    send_alert(
+        title= "crypto_alert_bot",
+        message="the crypto rate rises by 23.90$"
+    )
