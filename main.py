@@ -61,3 +61,14 @@ def check_market_status():
           state_cooldowns["CEILING_TRIGGERED"]= None,
           state_cooldowns["FLOOR_TRIGGERED"]= None
 
+def main():
+    print("=" * 60)
+    print("        INITIALIZING CRYPTO PRICE ALERT ENGINE")
+    print("=" * 60)
+    print(f"Tracking Ticker : {config.CRYPTO_TICKER} / {config.FIAT_CURRENCY}")
+    print(f"Target Ceiling  : ${config.ALERT_PRICE_CEILING:,.2f}")
+    print(f"Target Floor    : ${config.ALERT_PRICE_FLOOR:,.2f}")
+    print(f"Interval Cadence: Checked every {config.CHECK_INTERVAL_SECONDS} seconds")
+    print(f"Cooldown Buffer : Mutes duplicate alerts for {config.ALERT_COOLDOWN_MINUTES} mins")
+    print("-" * 60)
+
