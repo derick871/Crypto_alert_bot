@@ -25,4 +25,6 @@ def check_market_status():
    if price is None:
       print(f"[{current_time_str}] Market monitoring loop tracking active... (Data Fetch Failed)")
       return
+   print(f"[{current_time_str}] Verified {config.CRYPTO_TICKER} Value: ${price:,.2f}")
+   
    
