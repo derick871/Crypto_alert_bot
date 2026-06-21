@@ -54,3 +54,10 @@ def check_market_status():
             state_cooldowns["FLOOR_TRIGGERED"] = datetime.now()
         else:
             print(f"[{current_time_str}] Floor alert suppressed (cooldown active).")
+    
+    else:
+        if state_cooldowns["CEILING_TRIGGERED"]or state_cooldowns["FLOOR_TRIGGERED"]:
+          print("asset pricing stabilizes back with boundaries")
+          state_cooldowns["CEILING_TRIGGERED"]= None,
+          state_cooldowns["FLOOR_TRIGGERED"]= None
+
