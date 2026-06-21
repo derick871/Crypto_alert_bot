@@ -4,3 +4,17 @@ import schedule
 import config
 from utils import fetch_Crypto_price
 from notifier import send_alert
+
+state_cooldowns={
+    "CEILING_TRIGGERED" :None,
+    "FLOOR_TRIGGERED": None
+}
+
+def is_cooldowns_active(alert_key):
+    last_triggered= state_cooldowns[alert_key]
+
+    if not last_triggered:
+     return False
+
+cooldown_expiry= last_triggered + timedelta
+return time.now() < cooldown_expiry
