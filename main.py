@@ -18,3 +18,11 @@ def is_cooldowns_active(alert_key):
 
 cooldown_expiry= last_triggered + timedelta
 return time.now() < cooldown_expiry
+
+def check_market_status():
+   current_time_str= datetime.now().strftime
+   price= fetch_Crypto_price()
+   if price is None:
+      print(f"[{current_time_str}] Market monitoring loop tracking active... (Data Fetch Failed)")
+      return
+   
