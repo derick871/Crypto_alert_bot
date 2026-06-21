@@ -72,3 +72,6 @@ def main():
     print(f"Cooldown Buffer : Mutes duplicate alerts for {config.ALERT_COOLDOWN_MINUTES} mins")
     print("-" * 60)
 
+    # Initialize task execution intervals using schedule manager matrices
+    schedule.every(config.CHECK_INTERVAL_SECONDS).seconds.do(check_market_state)
+
