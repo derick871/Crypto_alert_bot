@@ -26,5 +26,14 @@ def check_market_status():
       print(f"[{current_time_str}] Market monitoring loop tracking active... (Data Fetch Failed)")
       return
    print(f"[{current_time_str}] Verified {config.CRYPTO_TICKER} Value: ${price:,.2f}")
-   
+   if price >= config.ALERT_PRICE_CEILLING:
+      if not is_cooldowns_active("CEILLING_TRIGGERED"):
+         send_alert(
+            tittle= f"{config.CRYPTO_TICKER} Price is beyond the target",
+            message = f"Current Price: ${price:,.2f} (Target Ceiling: ${config.ALERT_PRICE_CEILING:,.2f})"
+         )
+         state_cooldowns["CEILLING_TRIGGERED"]= datetime.now()
+      else:
+         print("The price supressed the target")
+
    
