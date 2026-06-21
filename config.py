@@ -7,5 +7,6 @@ BASE_URL = "https://min-api.cryptocompare.com/data/price"
 CRYPTO_TICKER= "BITCOIN"
 FIAT_CURRENCY= "USD"
 if __name__== "__main__":
-    print("api fetched successfuly")
+    print("API check:fetch successfully")
+
 
