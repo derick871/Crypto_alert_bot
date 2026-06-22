@@ -1,4 +1,6 @@
 import time
+import tkinter as tk
+from tkinter import ttk, messagebox
 from datetime import datetime, timedelta
 import schedule
 import config
@@ -73,10 +75,15 @@ def main():
     print("-" * 60)
 
     # Initialize task execution intervals using schedule manager matrices
-    schedule.every(config.CHECK_INTERVAL_SECONDS).seconds.do(check_market_state)
+    schedule.every(config.CHECK_INTERVAL_SECONDS).seconds.do(check_market_status)
     check_market_status()
 
-    while True:
-       schedule.run_pending()
-       time.sleep(1)
+    try:
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("\nScheduler stopped gracefully.")
 
+if __name__ == "__main__":
+    main()
