@@ -10,6 +10,9 @@ API_KEY = os.getenv("CRYPTO_API_KEY")
 BASE_URL = "https://min-api.cryptocompare.com/data/price"
 CRYPTO_TICKER = "BTC" 
 FIAT_CURRENCY = "USD"
+ALERT_PRICE_CEILING =100000.00
+ALERT_PRICE_FLOOR =90000.00
+CHECK_INTERVAL_SECONDS= 60
 
 def fetch_crypto_price():
     # Setup parameters according to CryptoCompare API documentation
