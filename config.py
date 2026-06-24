@@ -13,6 +13,7 @@ FIAT_CURRENCY = "USD"
 ALERT_PRICE_CEILING =100000.00
 ALERT_PRICE_FLOOR =90000.00
 CHECK_INTERVAL_SECONDS= 60
+ALERT_COOLDOWN_MINUTES= 60
 
 def fetch_crypto_price():
     # Setup parameters according to CryptoCompare API documentation
