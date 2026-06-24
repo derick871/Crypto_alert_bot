@@ -43,3 +43,19 @@ class DatabaseManager:
                     config.ALERT_PRICE_FLOOR = stored_values["floor"]
         except sqlite3.Error as e:
             print(f"[DB ERROR] Configuration parsing failed: {e}")
+    def save_config(self, ceiling, floor):
+        with sqlite3.connect(self.db_name) as conn:
+            cursor = conn.cursor()
+            cursor.execute("INSERT OR REPLACE INTO system_config (key, value) VALUES ('ceiling', ?)", (ceiling,))
+            cursor.execute("INSERT OR REPLACE INTO system_config (key, value) VALUES ('floor', ?)", (floor,))
+            conn.commit()
+
+    def log_alert_event(self, event_type, price, details):
+        with sqlite3.connect(self.db_name) as conn:
+            cursor = conn.cursor()
+            now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            cursor.execute("""
+                INSERT INTO audit_logs (timestamp, ticker, event_type, price, details)
+                VALUES (?, ?, ?, ?, ?)
+            """, (now_str, config.CRYPTO_TICKER, event_type, price, details))
+            conn.commit()
