@@ -1,31 +1,17 @@
 import sys
-import os
 from plyer import notification
 
 def send_alert(title, message):
-   
+    """Pushes notification packets cleanly out onto OS platform display managers."""
     try:
         notification.notify(
             title=title,
             message=message,
             app_name="Crypto Alert Bot",
-            timeout=10  # Duration (in seconds) the notification stays on screen
+            timeout=10
         )
-        
-        # Trigger an audible system alert bell
         sys.stdout.write("\a")
         sys.stdout.flush()
-        
         print(f"\n[ALERT NOTIFIED] {title} — {message}")
-        
     except Exception as e:
-        print(f"\n[ERROR] Failed to broadcast notification alert: {e}")
-
-# --- Optional Self-Test Block ---
-if __name__ == "__main__":
-    # allows you to test the file independently by running: python notifier.py
-    print("Testing notification dispatch system...")
-    send_alert(
-        title=" BITCOIN Target Ceiling Smashed!", 
-        message="Bitcoin has surpassed your alert threshold of $105,000.00."
-    )
+        print(f"\n[SYSTEM ERROR] OS framework failed notification deployment: {e}")
