@@ -63,11 +63,24 @@ class CryptoAlertApp(tk.Tk):
         self.floor_input.delete(0, tk.END)
         self.floor_input.insert(0, str(config.ALERT_PRICE_FLOOR))
 
+    # --- THREAD SAFE UI UPDATER METHODS ---
+    def safe_update_ui(self, price_text, log_text):
+        """Schedules UI adjustments to safely run back on the main thread."""
+        self.after(0, lambda: self._update_ui_elements(price_text, log_text))
+
+    def _update_ui_elements(self, price_text, log_text):
+        """Actual Tkinter mutations executed on the main thread."""
+        if price_text:
+            self.ticker_price_lbl.config(text=price_text)
+        if log_text:
+            self.terminal_view.config(state="normal")
+            self.terminal_view.insert(tk.END, f"{log_text}\n")
+            self.terminal_view.see(tk.END)
+            self.terminal_view.config(state="disabled")
+
     def write_terminal_log(self, text):
-        self.terminal_view.config(state="normal")
-        self.terminal_view.insert(tk.END, f"{text}\n")
-        self.terminal_view.see(tk.END)
-        self.terminal_view.config(state="disabled")
+        """Fallback method for main-thread log writing."""
+        self._update_ui_elements(None, text)
 
     def commit_parameters(self):
         try:
@@ -98,11 +111,14 @@ class CryptoAlertApp(tk.Tk):
         price = fetch_Crypto_price()
 
         if price is None:
-            self.ticker_price_lbl.config(text=f"Last Tracked {config.CRYPTO_TICKER} Value: Request Error")
-            self.write_terminal_log(f"[{current_time_str}] Network evaluation dropped. (Retrying...)")
+            self.safe_update_ui(
+                price_text=f"Last Tracked {config.CRYPTO_TICKER} Value: Request Error",
+                log_text=f"[{current_time_str}] Network evaluation dropped. (Retrying...)"
+            )
             return
 
-        self.ticker_price_lbl.config(text=f"Last Tracked {config.CRYPTO_TICKER} Value: ${price:,.2f}")
+        price_display = f"Last Tracked {config.CRYPTO_TICKER} Value: ${price:,.2f}"
+        log_display = None
 
         # --- CEILING CHECK ---
         if price >= config.ALERT_PRICE_CEILING:
@@ -112,9 +128,9 @@ class CryptoAlertApp(tk.Tk):
                 
                 self.db.log_alert_event("CEILING_BREACH", price, alert_msg)
                 self.state_cooldowns["CEILING_TRIGGERED"] = datetime.now()
-                self.write_terminal_log(f"[{current_time_str}] Ceiling breach registered and logged.")
+                log_display = f"[{current_time_str}] Ceiling breach registered and logged."
             else:
-                self.write_terminal_log(f"[{current_time_str}] Ceiling alert suppressed (cooldown running).")
+                log_display = f"[{current_time_str}] Ceiling alert suppressed (cooldown running)."
 
         # --- FLOOR CHECK ---
         elif price <= config.ALERT_PRICE_FLOOR:
@@ -124,16 +140,19 @@ class CryptoAlertApp(tk.Tk):
                 
                 self.db.log_alert_event("FLOOR_BREACH", price, alert_msg)
                 self.state_cooldowns["FLOOR_TRIGGERED"] = datetime.now()
-                self.write_terminal_log(f"[{current_time_str}] Floor breach registered and logged.")
+                log_display = f"[{current_time_str}] Floor breach registered and logged."
             else:
-                self.write_terminal_log(f"[{current_time_str}] Floor alert suppressed (cooldown running).")
+                log_display = f"[{current_time_str}] Floor alert suppressed (cooldown running)."
         
         # --- RESET BOUNDARY LIMITS ---
         else:
             if self.state_cooldowns["CEILING_TRIGGERED"] or self.state_cooldowns["FLOOR_TRIGGERED"]:
-                self.write_terminal_log(f"[{current_time_str}] Asset pricing stabilized inside normal bounds.")
+                log_display = f"[{current_time_str}] Asset pricing stabilized inside normal bounds."
                 self.state_cooldowns["CEILING_TRIGGERED"] = None
                 self.state_cooldowns["FLOOR_TRIGGERED"] = None
+
+        # Push updates to UI safely
+        self.safe_update_ui(price_text=price_display, log_text=log_display)
 
     def threaded_worker_loop(self):
         while self.engine_running:
@@ -154,7 +173,7 @@ class CryptoAlertApp(tk.Tk):
             self.worker_thread.start()
         else:
             self.engine_running = False
-            self.engine_status_lbl.config(text="Status: Stopped", foreground="red")
+            self.engine_status_lbl.config(text="Status: Stopped", foreground="blue")
             self.toggle_engine_btn.config(text="Engage Live Alert Engine")
             self.write_terminal_log("[SYSTEM] Monitoring execution threads suspended.")
 

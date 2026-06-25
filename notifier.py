@@ -15,3 +15,7 @@ def send_alert(title, message):
         print(f"\n[ALERT NOTIFIED] {title} — {message}")
     except Exception as e:
         print(f"\n[SYSTEM ERROR] OS framework failed notification deployment: {e}")
+
+if __name__ == "__main__":
+    print("[TEST] Notification configured...")
+    
