@@ -16,6 +16,7 @@ def send_alert(title, message):
     except Exception as e:
         print(f"\n[SYSTEM ERROR] OS framework failed notification deployment: {e}")
 
-if __name__ == "__main__":
-    print("[TEST] Notification configured...")
-    
+if __name__ == '__main__':
+    print("Notification configured")
+else:
+    print("Pending requests")

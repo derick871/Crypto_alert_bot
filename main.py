@@ -4,10 +4,10 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import datetime, timedelta
 
-# Import modules from local files
+# Import modules from local package structure
 from config import config
 from database import DatabaseManager
-from utils import fetch_Crypto_price
+from utils import fetch_crypto_price
 from notifier import send_alert
 
 class CryptoAlertApp(tk.Tk):
@@ -26,7 +26,6 @@ class CryptoAlertApp(tk.Tk):
         self.populate_default_parameters()
 
     def create_interface_components(self):
-        # Entry form panels
         input_frame = ttk.LabelFrame(self, text=" Configuration Parameters ", padding=15)
         input_frame.pack(fill="x", padx=15, pady=15)
 
@@ -41,12 +40,11 @@ class CryptoAlertApp(tk.Tk):
         self.save_settings_btn = ttk.Button(input_frame, text="Commit & Update Parameters", command=self.commit_parameters)
         self.save_settings_btn.grid(row=2, column=0, columnspan=2, pady=10)
 
-        # Live telemetry readouts
         telemetry_frame = ttk.LabelFrame(self, text=" Telemetry Engine Diagnostics ", padding=15)
         telemetry_frame.pack(fill="both", expand=True, padx=15, pady=5)
 
-        self.engine_status_lbl = ttk.Label(telemetry_frame, text="Status: Stopped", font=("Helvetica", 10, "bold"), foreground="red")
-        self.engine_status_lbl.pack(anchor="w", pady=2)
+        self.engine_status_lbl = ttk.Label(self, text="Status: Stopped", font=("Helvetica", 10, "bold"), foreground="red")
+        self.engine_status_lbl.pack(anchor="w", padx=20, pady=2)
 
         self.ticker_price_lbl = ttk.Label(telemetry_frame, text=f"Last Tracked {config.CRYPTO_TICKER} Value: N/A")
         self.ticker_price_lbl.pack(anchor="w", pady=2)
@@ -63,13 +61,11 @@ class CryptoAlertApp(tk.Tk):
         self.floor_input.delete(0, tk.END)
         self.floor_input.insert(0, str(config.ALERT_PRICE_FLOOR))
 
-    # --- THREAD SAFE UI UPDATER METHODS ---
     def safe_update_ui(self, price_text, log_text):
         """Schedules UI adjustments to safely run back on the main thread."""
         self.after(0, lambda: self._update_ui_elements(price_text, log_text))
 
     def _update_ui_elements(self, price_text, log_text):
-        """Actual Tkinter mutations executed on the main thread."""
         if price_text:
             self.ticker_price_lbl.config(text=price_text)
         if log_text:
@@ -79,7 +75,6 @@ class CryptoAlertApp(tk.Tk):
             self.terminal_view.config(state="disabled")
 
     def write_terminal_log(self, text):
-        """Fallback method for main-thread log writing."""
         self._update_ui_elements(None, text)
 
     def commit_parameters(self):
@@ -108,7 +103,7 @@ class CryptoAlertApp(tk.Tk):
 
     def execute_market_checks(self):
         current_time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        price = fetch_Crypto_price()
+        price = fetch_crypto_price()
 
         if price is None:
             self.safe_update_ui(
@@ -118,7 +113,7 @@ class CryptoAlertApp(tk.Tk):
             return
 
         price_display = f"Last Tracked {config.CRYPTO_TICKER} Value: ${price:,.2f}"
-        log_display = None
+        log_display = f"[{current_time_str}] Fetched live price: ${price:,.2f}"
 
         # --- CEILING CHECK ---
         if price >= config.ALERT_PRICE_CEILING:
@@ -151,7 +146,6 @@ class CryptoAlertApp(tk.Tk):
                 self.state_cooldowns["CEILING_TRIGGERED"] = None
                 self.state_cooldowns["FLOOR_TRIGGERED"] = None
 
-        # Push updates to UI safely
         self.safe_update_ui(price_text=price_display, log_text=log_display)
 
     def threaded_worker_loop(self):
@@ -173,7 +167,7 @@ class CryptoAlertApp(tk.Tk):
             self.worker_thread.start()
         else:
             self.engine_running = False
-            self.engine_status_lbl.config(text="Status: Stopped", foreground="blue")
+            self.engine_status_lbl.config(text="Status: Stopped", foreground="red")
             self.toggle_engine_btn.config(text="Engage Live Alert Engine")
             self.write_terminal_log("[SYSTEM] Monitoring execution threads suspended.")
 

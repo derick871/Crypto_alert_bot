@@ -5,9 +5,9 @@ load_dotenv()
 
 class AppConfig:
     def __init__(self):
-        # API Configurations
+        # API Configurations (CryptoCompare single price endpoint)
         self.API_KEY = os.getenv("CRYPTO_API_KEY", "")
-        self.BASE_URL = "https://cryptocompare.com"
+        self.BASE_URL = "https://min-api.cryptocompare.com/data/price"
         
         # Monitor Default Targets
         self.CRYPTO_TICKER = "BTC" 
