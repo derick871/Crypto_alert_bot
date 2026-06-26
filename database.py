@@ -76,5 +76,3 @@ class DatabaseManager:
 
 if __name__ == '__main__':
     print("Data saved to the event history")
-else:
-    print("An error occured")

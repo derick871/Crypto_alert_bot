@@ -18,5 +18,3 @@ def send_alert(title, message):
 
 if __name__ == '__main__':
     print("Notification configured")
-else:
-    print("Pending requests")

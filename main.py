@@ -40,16 +40,16 @@ class CryptoAlertApp(tk.Tk):
         self.save_settings_btn = ttk.Button(input_frame, text="Commit & Update Parameters", command=self.commit_parameters)
         self.save_settings_btn.grid(row=2, column=0, columnspan=2, pady=10)
 
-        telemetry_frame = ttk.LabelFrame(self, text=" Telemetry Engine Diagnostics ", padding=15)
-        telemetry_frame.pack(fill="both", expand=True, padx=15, pady=5)
+        telemetry_frame = ttk.LabelFrame(self, text=" Telemetry Engine Diagnostics ", padding=10)
+        telemetry_frame.pack(fill="both", expand=True, padx=10, pady=5)
 
-        self.engine_status_lbl = ttk.Label(self, text="Status: Stopped", font=("Helvetica", 10, "bold"), foreground="red")
+        self.engine_status_lbl = ttk.Label(self, text="Status: Stopped", font=("Helvetica", 10, "bold"), foreground="blue")
         self.engine_status_lbl.pack(anchor="w", padx=20, pady=2)
 
         self.ticker_price_lbl = ttk.Label(telemetry_frame, text=f"Last Tracked {config.CRYPTO_TICKER} Value: N/A")
         self.ticker_price_lbl.pack(anchor="w", pady=2)
 
-        self.terminal_view = tk.Text(telemetry_frame, height=6, state="disabled", wrap="word", background="#f4f4f4")
+        self.terminal_view = tk.Text(telemetry_frame, height=6, state="disabled",foreground="white", wrap="word", background="#e68c8c")
         self.terminal_view.pack(fill="both", expand=True, pady=5)
 
         self.toggle_engine_btn = ttk.Button(self, text="Engage Live Alert Engine", command=self.toggle_monitoring_loops)
@@ -167,7 +167,7 @@ class CryptoAlertApp(tk.Tk):
             self.worker_thread.start()
         else:
             self.engine_running = False
-            self.engine_status_lbl.config(text="Status: Stopped", foreground="red")
+            self.engine_status_lbl.config(text="Status: Stopped", foreground="blue")
             self.toggle_engine_btn.config(text="Engage Live Alert Engine")
             self.write_terminal_log("[SYSTEM] Monitoring execution threads suspended.")
 
